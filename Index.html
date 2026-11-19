@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>NexaCred: ¿Aprobás o Rechazás? | Juego Interactivo en Vivo</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.35s ease-out forwards',
+            'slide-up': 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            },
+            slideUp: {
+              '0%': { opacity: '0', transform: 'translateY(18px) scale(0.98)' },
+              '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+            },
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    /* Estilos base y mejoras visuales fintech */
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background-color: #020617; /* slate-950 */
+      color: #f8fafc;
+      overflow-x: hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Fondo con grilla sutil estilo plataforma SaaS */
+    .fintech-grid {
+      background-image: 
+        radial-gradient(circle at 15% 15%, rgba(16, 185, 129, 0.08), transparent 35%),
+        radial-gradient(circle at 85% 20%, rgba(99, 102, 241, 0.10), transparent 40%),
+        linear-gradient(to right, rgba(30, 41, 59, 0.35) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(30, 41, 59, 0.35) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 36px 36px, 36px 36px;
+    }
+
+    /* Modo Proyector: escala tipográfica para aulas o pantallas grandes */
+    html.projector-mode {
+      font-size: 18px;
+    }
+    @media (min-width: 1024px) {
+      html.projector-mode {
+        font-size: 19.5px;
+      }
+    }
+
+    /* Números tabulares para cifras financieras */
+    .tabular-nums {
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Transiciones suaves en la tarjeta deslizable */
+    #dossier-card {
+      transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.25s ease, border-color 0.25s ease;
+      touch-action: pan-y;
+    }
+
+    /* Barra de desplazamiento personalizada */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+  </style>
+</head>
+<body class="fintech-grid min-h-screen flex flex-col justify-between selection:bg-emerald-500/30 selection:text-emerald-200">
+
+  <!-- =====================================================================
+       BARRA SUPERIOR (HEADER PERSISTENTE)
+  ===================================================================== -->
+  <header class="sticky top-0 z-30 backdrop-blur-md bg-slate-950/80 border-b border-slate-800/80">
+    <div class="max-w-6xl mx-auto px-3 sm:px-6 py-3 flex items-center justify-between gap-2">
+      <!-- Logo NexaCred -->
+      <button onclick="confirmReturnHome()" class="flex items-center gap-2.5 text-left group focus:outline-none" title="Volver al inicio">
+        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-indigo-600 p-[1px] shadow-lg shadow-emerald-500/15 group-hover:scale-105 transition-transform">
+          <div class="w-full h-full bg-slate-950 rounded-[11px] flex items-center justify-center">
+            <!-- Icono SVG NexaCred -->
+            <svg class="w-5 h-5 sm:w-6 sm:h-6 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+              <path d="M2 17l10 5 10-5"/>
+              <path d="M2 12l10 5 10-5"/>
+            </svg>
+          </div>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold text-base sm:text-lg tracking-tight text-white">Nexa<span class="text-emerald-400">Cred</span></span>
+            <span class="hidden md:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">
+              Panel Riesgo SaaS
+            </span>
+          </div>
+          <p class="text-[11px] sm:text-xs text-slate-400 leading-none">¿Aprobás o Rechazás? • En Vivo</p>
+        </div>
+      </button>
+
+      <!-- Controles de Presentación y Audio -->
+      <div class="flex items-center gap-1.5 sm:gap-2.5">
+        <!-- Botón Glosario Rápido -->
+        <button onclick="toggleGlossary(true)" class="px-2.5 py-2 sm:px-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700/80 text-slate-200 text-xs sm:text-sm font-medium flex items-center gap-1.5 transition active:scale-95" title="Ver diccionario rápido">
+          <span>📖</span>
+          <span class="hidden sm:inline">Glosario</span>
+        </button>
+
+        <!-- Botón Modo Proyector (Texto Grande) -->
+        <button id="btn-projector" onclick="toggleProjectorMode()" class="px-2.5 py-2 sm:px-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700/80 text-slate-200 text-xs sm:text-sm font-medium flex items-center gap-1.5 transition active:scale-95" title="Aumentar tamaño de letra para proyector">
+          <span>🖥️</span>
+          <span id="projector-label" class="hidden sm:inline">Proyector: OFF</span>
+        </button>
+
+        <!-- Botón Sonido Web Audio API -->
+        <button id="btn-sound" onclick="toggleSound()" class="px-2.5 py-2 sm:px-3 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition active:scale-95" title="Activar o silenciar sonidos">
+          <span id="sound-icon">🔊</span>
+          <span id="sound-label" class="hidden sm:inline">Sonido</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- =====================================================================
+       CONTENEDOR PRINCIPAL DE VISTAS
+  ===================================================================== -->
+  <main class="flex-1 w-full max-w-6xl mx-auto px-3 sm:px-6 py-5 sm:py-8 flex flex-col justify-center">
+
+    <!-- -------------------------------------------------------------------
+         VISTA 1: PANTALLA DE INICIO
+    -------------------------------------------------------------------- -->
+    <section id="screen-start" class="animate-fade-in space-y-6 sm:space-y-8">
+      <!-- Hero Banner -->
+      <div class="relative overflow-hidden rounded-3xl bg-slate-900/90 border border-slate-800 p-6 sm:p-10 shadow-2xl">
+        <div class="absolute -top-24 -right-24 w-64 h-64 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-24 -left-24 w-64 h-64 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="relative z-10 max-w-3xl mx-auto text-center space-y-4">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs sm:text-sm font-semibold">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            DINÁMICA EN VIVO • EL TRIBUNAL DEL SCORE
+          </div>
+
+          <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-white leading-tight">
+            NexaCred: <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-indigo-400">¿Aprobás o Rechazás?</span>
+          </h1>
+
+          <p class="text-slate-300 text-sm sm:text-lg leading-relaxed">
+            <strong class="text-white">NexaCred no presta plata:</strong> vende el software a las financieras que sí lo hacen.
+            Hoy tomás el control del <span class="text-indigo-300 font-semibold">Panel Privado de Riesgo</span>. Evaluá 6 solicitudes reales junto al público, hacé crecer la <span class="text-emerald-300 font-semibold">Cartera Activa</span> y evitá caer en <span class="text-rose-300 font-semibold">Mora</span>.
+          </p>
+
+          <div class="pt-3 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <button onclick="startGame()" class="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-slate-950 font-extrabold text-base sm:text-lg shadow-xl shadow-emerald-500/25 flex items-center justify-center gap-3 transition transform hover:-translate-y-0.5 active:scale-95">
+              <span>🚀 Comenzar Evaluación (6 Casos)</span>
+            </button>
+          </div>
+          <p class="text-xs text-slate-400">
+            Atajos rápidos: <kbd class="px-1.5 py-0.5 bg-slate-800 rounded border border-slate-700 text-slate-300">← / A</kbd> Rechazar &nbsp;•&nbsp;
+            <kbd class="px-1.5 py-0.5 bg-slate-800 rounded border border-slate-700 text-slate-300">→ / D</kbd> Aprobar &nbsp;•&nbsp;
+            <kbd class="px-1.5 py-0.5 bg-slate-800 rounded border border-slate-700 text-slate-300">B</kbd> NexaBot
+          </p>
+        </div>
+      </div>
+
+      <!-- 3 Tarjetas de Reglas Visuales para el Público -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
+        <!-- Regla 1: Score -->
+        <div class="rounded-2xl bg-slate-900/80 border border-slate-800 p-5 sm:p-6 hover:border-indigo-500/40 transition">
+          <div class="w-11 h-11 rounded-xl bg-indigo-500/15 border border-indigo-500/30 flex items-center justify-center text-2xl mb-4">
+            📊
+          </div>
+          <h2 class="text-base sm:text-lg font-bold text-white mb-2">1. El Score NexaCred (300–990)</h2>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed mb-3">
+            Mide la probabilidad de pago del solicitante antes de prestarle:
+          </p>
+          <div class="space-y-1.5 text-xs font-medium">
+            <div class="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
+              <span>700 a 990 pts</span>
+              <span>Riesgo Bajo ✅</span>
+            </div>
+            <div class="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-amber-500/10 text-amber-300 border border-amber-500/20">
+              <span>600 a 699 pts</span>
+              <span>Zona Gris 🔍</span>
+            </div>
+            <div class="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-rose-500/10 text-rose-300 border border-rose-500/20">
+              <span>Menos de 600</span>
+              <span>Riesgo Alto ⚠️</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Regla 2: Documentación -->
+        <div class="rounded-2xl bg-slate-900/80 border border-slate-800 p-5 sm:p-6 hover:border-emerald-500/40 transition">
+          <div class="w-11 h-11 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-2xl mb-4">
+            🪪
+          </div>
+          <h2 class="text-base sm:text-lg font-bold text-white mb-2">2. Tres Papeles Obligatorios</h2>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed mb-3">
+            Aunque el cliente tenga buen score, para pasar a <strong class="text-white">verificación biométrica y firma en sucursal</strong> debe tener validados:
+          </p>
+          <ul class="space-y-1.5 text-xs sm:text-sm text-slate-200">
+            <li class="flex items-center gap-2"><span class="text-emerald-400">✔</span> DNI frente y dorso</li>
+            <li class="flex items-center gap-2"><span class="text-emerald-400">✔</span> Comprobante de ingresos</li>
+            <li class="flex items-center gap-2"><span class="text-emerald-400">✔</span> Comprobante de domicilio</li>
+          </ul>
+        </div>
+
+        <!-- Regla 3: TNA vs CFT -->
+        <div class="rounded-2xl bg-slate-900/80 border border-slate-800 p-5 sm:p-6 hover:border-amber-500/40 transition">
+          <div class="w-11 h-11 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-2xl mb-4">
+            💸
+          </div>
+          <h2 class="text-base sm:text-lg font-bold text-white mb-2">3. TNA vs. CFT (Sin letra chica)</h2>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed mb-3">
+            La <strong class="text-white">TNA</strong> es solo el interés anual base, pero el <strong class="text-amber-300">CFT (Costo Financiero Total)</strong> suma gastos y seguros: es el costo real.
+          </p>
+          <div class="p-2.5 rounded-xl bg-slate-950/70 border border-slate-800 text-xs text-slate-300">
+            💡 <strong class="text-white">Regla de oro:</strong> Si la cuota mensual con CFT supera el <span class="text-rose-400 font-bold">40% del sueldo</span>, el cliente caerá en mora.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- -------------------------------------------------------------------
+         VISTA 2: PANTALLA DE JUEGO EN VIVO
+    -------------------------------------------------------------------- -->
+    <section id="screen-game" class="hidden space-y-4 sm:space-y-5 animate-fade-in">
+
+      <!-- Panel Superior de Métricas en Tiempo Real -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+        <!-- Caso Actual -->
+        <div class="rounded-2xl bg-slate-900/90 border border-slate-800 p-3 sm:p-4 flex flex-col justify-between">
+          <div class="flex items-center justify-between text-xs text-slate-400 font-medium">
+            <span>SOLICITUD</span>
+            <span id="progress-pct" class="text-indigo-400 font-bold tabular-nums">1/6</span>
+          </div>
+          <div class="mt-1 flex items-baseline gap-2">
+            <span id="hud-case" class="text-xl sm:text-2xl font-black text-white tabular-nums">Caso 1</span>
+            <span class="text-xs text-slate-400">de 6</span>
+          </div>
+          <div class="mt-2 w-full h-1.5 bg-slate-800 rounded-full overflow-hidden flex gap-1" id="progress-segments">
+            <!-- Segmentos generados por JS -->
+          </div>
+        </div>
+
+        <!-- Cartera Activa -->
+        <div id="card-cartera" class="rounded-2xl bg-slate-900/90 border border-slate-800 p-3 sm:p-4 flex flex-col justify-between transition-colors">
+          <div class="flex items-center justify-between text-xs text-slate-400 font-medium">
+            <span>CARTERA ACTIVA</span>
+            <span class="text-emerald-400">💰</span>
+          </div>
+          <div id="hud-cartera" class="mt-1 text-lg sm:text-2xl font-black text-emerald-400 tabular-nums tracking-tight">
+            $1.500.000
+          </div>
+          <div class="mt-1 text-[11px] text-slate-400 truncate">Capital colocado sano</div>
+        </div>
+
+        <!-- Índice de Mora -->
+        <div id="card-mora" class="rounded-2xl bg-slate-900/90 border border-slate-800 p-3 sm:p-4 flex flex-col justify-between transition-colors">
+          <div class="flex items-center justify-between text-xs text-slate-400 font-medium">
+            <span>ÍNDICE DE MORA</span>
+            <span id="mora-badge" class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-500/15 text-emerald-300">Saludable</span>
+          </div>
+          <div id="hud-mora" class="mt-1 text-xl sm:text-2xl font-black text-white tabular-nums">
+            4.2%
+          </div>
+          <div class="mt-1 text-[11px] text-slate-400 truncate">Atraso &gt; 30 días</div>
+        </div>
+
+        <!-- Puntaje de Analista -->
+        <div id="card-score" class="rounded-2xl bg-slate-900/90 border border-slate-800 p-3 sm:p-4 flex flex-col justify-between transition-colors">
+          <div class="flex items-center justify-between text-xs text-slate-400 font-medium">
+            <span>PUNTAJE ANALISTA</span>
+            <span class="text-indigo-400">🏆</span>
+          </div>
+          <div class="mt-1 flex items-baseline gap-1.5">
+            <span id="hud-points" class="text-xl sm:text-2xl font-black text-indigo-400 tabular-nums">0</span>
+            <span class="text-xs text-slate-400">/ 600 pts</span>
+          </div>
+          <div class="mt-1 text-[11px] text-slate-400 truncate">Auditoría de decisiones</div>
+        </div>
+      </div>
+
+      <!-- Tarjeta Principal de Solicitud (Expediente Fintech) -->
+      <article id="dossier-card" class="rounded-3xl bg-slate-900/95 border border-slate-800 shadow-2xl overflow-hidden">
+        <!-- Cabecera del Expediente -->
+        <div class="px-4 sm:px-7 py-3 bg-slate-950/70 border-b border-slate-800 flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2.5">
+            <span id="req-id" class="font-mono text-xs sm:text-sm font-bold text-indigo-300 bg-indigo-500/10 border border-indigo-500/25 px-2.5 py-1 rounded-lg">
+              #NX-2026-01
+            </span>
+            <span class="text-xs text-slate-400 hidden sm:inline">• Origen: Simulador Web Pública</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/15 text-amber-300 border border-amber-500/30">
+              <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+              PENDIENTE DE REVISIÓN
+            </span>
+          </div>
+        </div>
+
+        <!-- Cuerpo del Expediente -->
+        <div class="p-4 sm:p-7 space-y-5 sm:space-y-6">
+          <!-- Fila 1: Perfil del Solicitante + Frase -->
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-slate-800/80">
+            <div class="flex items-start sm:items-center gap-4">
+              <div id="app-avatar" class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-950 border border-slate-700 flex items-center justify-center text-3xl sm:text-4xl shrink-0 shadow-inner">
+                👩‍🍳
+              </div>
+              <div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <h2 id="app-name" class="text-xl sm:text-2xl font-extrabold text-white">Valeria Mendoza</h2>
+                  <span id="app-age" class="text-xs font-medium px-2 py-0.5 rounded-md bg-slate-800 text-slate-300">34 años</span>
+                </div>
+                <p id="app-role" class="text-sm sm:text-base text-emerald-400 font-semibold">Emprendedora Gastronómica</p>
+                <p id="app-purpose" class="text-xs sm:text-sm text-slate-300 mt-0.5">
+                  <span class="text-slate-400">Motivo:</span> Compra de horno convector industrial
+                </p>
+              </div>
+            </div>
+
+            <!-- Burbuja de Frase del Cliente -->
+            <div class="md:max-w-md rounded-2xl bg-slate-950/80 border border-slate-800 p-3.5 sm:p-4 relative">
+              <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">💬 Declaración del solicitante</div>
+              <p id="app-quote" class="text-xs sm:text-sm italic text-slate-200 leading-relaxed">
+                "Ya tengo pedidos confirmados para eventos y con este horno duplico la producción."
+              </p>
+            </div>
+          </div>
+
+          <!-- Fila 2: Grilla de Datos Financieros + Score + Documentación -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+
+            <!-- Columna Izquierda (7 cols): Condiciones del Préstamo -->
+            <div class="lg:col-span-7 space-y-4">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+                <span>💳 Condiciones Simuladas del Préstamo</span>
+              </h3>
+
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <!-- Monto Solicitado -->
+                <div class="rounded-2xl bg-slate-950/70 border border-slate-800 p-3.5">
+                  <div class="text-xs text-slate-400">Monto Pedido</div>
+                  <div id="fin-amount" class="text-lg sm:text-xl font-black text-white tabular-nums mt-0.5">$1.200.000</div>
+                  <div id="fin-term" class="text-xs text-indigo-300 font-medium mt-0.5">en 12 cuotas</div>
+                </div>
+
+                <!-- Cuota Mensual -->
+                <div class="rounded-2xl bg-slate-950/70 border border-slate-800 p-3.5">
+                  <div class="text-xs text-slate-400">Cuota Mensual</div>
+                  <div id="fin-installment" class="text-lg sm:text-xl font-black text-emerald-400 tabular-nums mt-0.5">$158.000</div>
+                  <div class="text-[11px] text-slate-400 mt-0.5">Final con impuestos</div>
+                </div>
+
+                <!-- Ingreso Declarado -->
+                <div class="col-span-2 sm:col-span-1 rounded-2xl bg-slate-950/70 border border-slate-800 p-3.5">
+                  <div class="text-xs text-slate-400">Ingreso Mensual</div>
+                  <div id="fin-income" class="text-lg sm:text-xl font-bold text-slate-200 tabular-nums mt-0.5">$720.000</div>
+                  <div id="fin-income-sub" class="text-[11px] text-slate-400 mt-0.5">Declarado en ficha</div>
+                </div>
+              </div>
+
+              <!-- Comparativa TNA vs CFT -->
+              <div class="rounded-2xl bg-slate-950/70 border border-slate-800 p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <div class="text-xs font-semibold text-slate-300">Tasas Aplicadas al Crédito</div>
+                  <div class="text-[11px] text-slate-400">El CFT incluye gastos administrativos y seguro</div>
+                </div>
+                <div class="flex items-center gap-3">
+                  <div class="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-700 text-center">
+                    <div class="text-[10px] uppercase text-slate-400 font-semibold">TNA</div>
+                    <div id="fin-tna" class="text-sm sm:text-base font-bold text-slate-200 tabular-nums">62%</div>
+                  </div>
+                  <span class="text-slate-600 font-bold">→</span>
+                  <div class="px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-center">
+                    <div class="text-[10px] uppercase text-amber-300 font-semibold">CFT Real</div>
+                    <div id="fin-cft" class="text-sm sm:text-base font-extrabold text-amber-300 tabular-nums">81%</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Asistente Virtual NexaBot -->
+              <div class="pt-1">
+                <button id="btn-nexabot" onclick="toggleNexaBot()" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-500/40 text-indigo-200 text-xs sm:text-sm font-semibold flex items-center justify-center sm:justify-start gap-2 transition active:scale-95">
+                  <span class="text-base">🤖</span>
+                  <span id="nexabot-btn-text">Consultar a NexaBot (Análisis Rápido)</span>
+                </button>
+
+                <div id="nexabot-box" class="hidden mt-3 rounded-2xl bg-indigo-950/50 border border-indigo-500/40 p-3.5 sm:p-4 animate-slide-up">
+                  <div class="flex items-start gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center text-lg shrink-0">
+                      🤖
+                    </div>
+                    <div class="space-y-1">
+                      <div class="text-xs font-bold text-indigo-300 flex items-center gap-2">
+                        <span>NexaBot • Copiloto de Riesgo</span>
+                        <span class="text-[10px] px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-200">IA</span>
+                      </div>
+                      <p id="nexabot-text" class="text-xs sm:text-sm text-slate-200 leading-relaxed">
+                        Analizando perfil...
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Columna Derecha (5 cols): Medidor de Score + Checklist Documentación -->
+            <div class="lg:col-span-5 space-y-4">
+              <!-- Medidor Visual del Score (300 - 990) -->
+              <div class="rounded-2xl bg-slate-950/80 border border-slate-800 p-4">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Score NexaCred</span>
+                  <span id="score-zone-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                    Riesgo Bajo
+                  </span>
+                </div>
+
+                <div class="flex items-baseline justify-between my-2">
+                  <div>
+                    <span id="score-value" class="text-3xl sm:text-4xl font-black text-emerald-400 tabular-nums">820</span>
+                    <span class="text-xs text-slate-400 font-medium"> / 990 pts</span>
+                  </div>
+                  <span class="text-[11px] text-slate-400">Escala 300–990</span>
+                </div>
+
+                <!-- Barra Segmentada del Score -->
+                <div class="relative pt-2 pb-1">
+                  <div class="h-3 w-full rounded-full overflow-hidden flex bg-slate-800">
+                    <!-- 300 a 600 = 300/690 = 43.5% -->
+                    <div class="h-full bg-rose-500/80" style="width: 43.5%" title="Riesgo Alto (<600)"></div>
+                    <!-- 600 a 700 = 100/690 = 14.5% -->
+                    <div class="h-full bg-amber-400/80" style="width: 14.5%" title="Zona Gris (600-699)"></div>
+                    <!-- 700 a 990 = 290/690 = 42% -->
+                    <div class="h-full bg-emerald-500/80" style="width: 42%" title="Riesgo Bajo (700+)"></div>
+                  </div>
+                  <!-- Indicador móvil (aguja) -->
+                  <div id="score-marker" class="absolute top-0.5 -translate-x-1/2 transition-all duration-500 ease-out" style="left: 75%;">
+                    <div class="w-4 h-4 rounded-full bg-white border-4 border-slate-950 shadow-lg"></div>
+                  </div>
+                </div>
+
+                <div class="flex justify-between text-[10px] font-semibold text-slate-400 mt-1 tabular-nums">
+                  <span>300 (Alto)</span>
+                  <span>600</span>
+                  <span>700</span>
+                  <span>990 (Bajo)</span>
+                </div>
+              </div>
+
+              <!-- Checklist de Documentación Obligatoria -->
+              <div class="rounded-2xl bg-slate-950/80 border border-slate-800 p-4 space-y-2.5">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Documentación Adjunta</span>
+                  <span id="docs-counter" class="text-xs font-bold text-emerald-400 tabular-nums">3 / 3 OK</span>
+                </div>
+
+                <div id="docs-list" class="space-y-2">
+                  <!-- Renderizado dinámicamente por JS -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Barra de Botones de Votación en Vivo -->
+        <div class="p-4 sm:p-6 bg-slate-950/90 border-t border-slate-800">
+          <div class="text-center text-xs text-slate-400 mb-3 font-medium">
+            🗳️ ¡Voten ahora en el aula! ¿Qué decisión toma el analista?
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            <button id="btn-reject" onclick="handleDecision(false)" class="group py-4 px-5 rounded-2xl bg-rose-500/15 hover:bg-rose-500 text-rose-300 hover:text-white border-2 border-rose-500/50 hover:border-rose-400 font-extrabold text-sm sm:text-base flex items-center justify-center gap-2.5 transition-all duration-150 active:scale-95 shadow-lg shadow-rose-950/30">
+              <span class="text-xl group-hover:scale-110 transition-transform">❌</span>
+              <span>RECHAZAR SOLICITUD</span>
+            </button>
+
+            <button id="btn-approve" onclick="handleDecision(true)" class="group py-4 px-5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 border-2 border-emerald-400 font-extrabold text-sm sm:text-base flex items-center justify-center gap-2.5 transition-all duration-150 active:scale-95 shadow-lg shadow-emerald-500/20">
+              <span class="text-xl group-hover:scale-110 transition-transform">✅</span>
+              <span>APROBAR Y ENVIAR A SUCURSAL</span>
+            </button>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- -------------------------------------------------------------------
+         VISTA 3: PANTALLA FINAL DE RESULTADOS
+    -------------------------------------------------------------------- -->
+    <section id="screen-results" class="hidden animate-slide-up space-y-6">
+      <div class="rounded-3xl bg-slate-900/95 border border-slate-800 p-6 sm:p-10 shadow-2xl text-center space-y-6 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-b from-emerald-500/5 via-transparent to-indigo-500/5 pointer-events-none"></div>
+
+        <!-- Medalla y Rango -->
+        <div class="relative z-10 space-y-3">
+          <div id="final-trophy" class="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-br from-emerald-500/20 to-indigo-500/20 border border-emerald-500/40 flex items-center justify-center text-5xl shadow-xl">
+            🏆
+          </div>
+          <div class="inline-block px-3 py-1 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 text-xs font-bold uppercase tracking-wider">
+            Auditoría Finalizada
+          </div>
+          <h2 id="final-rank" class="text-2xl sm:text-4xl font-black text-white">
+            Director/a de Riesgo Crediticio
+          </h2>
+          <p id="final-subtitle" class="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto">
+            ¡Excelente criterio financiero! Lograste equilibrar rentabilidad y control de riesgo en el panel de NexaCred.
+          </p>
+        </div>
+
+        <!-- KPIs Finales -->
+        <div class="relative z-10 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
+          <div class="rounded-2xl bg-slate-950/80 border border-slate-800 p-4">
+            <div class="text-xs text-slate-400 font-semibold uppercase">Puntaje Obtenido</div>
+            <div id="final-points" class="text-2xl sm:text-3xl font-black text-indigo-400 tabular-nums mt-1">600 / 600</div>
+            <div id="final-accuracy" class="text-xs text-slate-400 mt-1">6 de 6 casos acertados</div>
+          </div>
+
+          <div class="rounded-2xl bg-slate-950/80 border border-slate-800 p-4">
+            <div class="text-xs text-slate-400 font-semibold uppercase">Cartera Activa Lograda</div>
+            <div id="final-cartera" class="text-2xl sm:text-3xl font-black text-emerald-400 tabular-nums mt-1">$5.250.000</div>
+            <div class="text-xs text-slate-400 mt-1">Créditos desembolsados</div>
+          </div>
+
+          <div class="rounded-2xl bg-slate-950/80 border border-slate-800 p-4">
+            <div class="text-xs text-slate-400 font-semibold uppercase">Índice de Mora Final</div>
+            <div id="final-mora" class="text-2xl sm:text-3xl font-black text-white tabular-nums mt-1">3.1%</div>
+            <div id="final-mora-status" class="text-xs text-emerald-400 mt-1">Cartera saludable</div>
+          </div>
+        </div>
+
+        <!-- Desglose de los 6 Casos -->
+        <div class="relative z-10 max-w-3xl mx-auto text-left space-y-2.5">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 px-1">📋 Resumen de Decisiones del Tribunal</h3>
+          <div id="final-recap-list" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <!-- Generado por JS -->
+          </div>
+        </div>
+
+        <!-- Botones de Acción Final + Enlace al Prototipo Real -->
+        <div class="relative z-10 pt-2 flex flex-col sm:flex-row items-center justify-center gap-3.5">
+          <button onclick="startGame()" class="w-full sm:w-auto px-6 py-3.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 font-bold text-sm sm:text-base flex items-center justify-center gap-2 transition active:scale-95">
+            <span>🔄 Jugar de Nuevo</span>
+          </button>
+
+          <a href="https://nexa-cred.vercel.app" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-indigo-500 hover:from-emerald-400 hover:to-indigo-400 text-slate-950 font-extrabold text-sm sm:text-base flex items-center justify-center gap-2 shadow-xl shadow-emerald-500/20 transition transform hover:-translate-y-0.5">
+            <span>🚀 Abrir Prototipo Real NexaCred</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+            </svg>
+          </a>
+        </div>
+
+        <!-- Nota útil para continuar la presentación en vivo -->
+        <div class="relative z-10 max-w-xl mx-auto rounded-2xl bg-slate-950/70 border border-slate-800/90 p-3 text-xs text-slate-400">
+          💡 <strong class="text-slate-200">Tip para la demo en vivo:</strong> En el sitio real agregá <code class="text-emerald-400 font-mono">/admin</code> a la URL e ingresá con <code class="text-indigo-300 font-mono">admin@nexacred.com</code> / <code class="text-indigo-300 font-mono">demo1234</code>.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- =====================================================================
+       MODAL DE RESOLUCIÓN TRAS CADA DECISIÓN
+  ===================================================================== -->
+  <div id="modal-resolution" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+    <div id="modal-resolution-box" class="w-full max-w-xl rounded-3xl bg-slate-900 border border-slate-700 shadow-2xl overflow-hidden animate-slide-up my-auto">
+      <!-- Banner Superior (Acierto / Error) -->
+      <div id="res-banner" class="px-6 py-4 bg-emerald-500/15 border-b border-emerald-500/30 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <span id="res-icon" class="text-3xl">🎉</span>
+          <div>
+            <div id="res-verdict" class="text-lg sm:text-xl font-black text-emerald-300">¡DECISIÓN ACERTADA!</div>
+            <div id="res-points-earned" class="text-xs font-bold text-emerald-200/80">+100 puntos de analista</div>
+          </div>
+        </div>
+        <span id="res-case-tag" class="text-xs font-mono px-2.5 py-1 rounded-lg bg-slate-950/60 text-slate-300">Caso 1/6</span>
+      </div>
+
+      <!-- Contenido de la Resolución -->
+      <div class="p-5 sm:p-7 space-y-4">
+        <div>
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">¿Qué pasó con la solicitud?</h3>
+          <p id="res-outcome" class="text-sm sm:text-base text-white font-medium leading-relaxed">
+            Valeria pasó la verificación biométrica en sucursal, firmó y recibió el desembolso.
+          </p>
+        </div>
+
+        <!-- Impacto en Métricas -->
+        <div id="res-impacts" class="flex flex-wrap gap-2">
+          <!-- Pills generadas por JS -->
+        </div>
+
+        <!-- Cápsula Educativa NexaCred -->
+        <div class="rounded-2xl bg-indigo-950/40 border border-indigo-500/30 p-4 space-y-1.5">
+          <div class="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-indigo-300">
+            <span>🎓 Cápsula NexaCred:</span>
+            <span id="res-lesson-title">Flujo de Desembolso</span>
+          </div>
+          <p id="res-lesson-body" class="text-xs sm:text-sm text-slate-200 leading-relaxed">
+            Explicación del concepto financiero...
+          </p>
+        </div>
+
+        <button id="btn-next-case" onclick="nextCase()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-indigo-500 hover:from-emerald-400 hover:to-indigo-400 text-slate-950 font-extrabold text-base shadow-lg transition active:scale-95 flex items-center justify-center gap-2">
+          <span id="btn-next-label">Siguiente Solicitud →</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       MODAL DE GLOSARIO RÁPIDO (SIN LETRA CHICA)
+  ===================================================================== -->
+  <div id="modal-glossary" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto" onclick="if(event.target===this) toggleGlossary(false)">
+    <div class="w-full max-w-2xl rounded-3xl bg-slate-900 border border-slate-700 shadow-2xl overflow-hidden animate-slide-up my-auto">
+      <div class="px-6 py-4 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <span class="text-xl">📖</span>
+          <h3 class="text-base sm:text-lg font-extrabold text-white">Diccionario NexaCred "Sin Letra Chica"</h3>
+        </div>
+        <button onclick="toggleGlossary(false)" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center font-bold">✕</button>
+      </div>
+      <div class="p-5 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
+        <div class="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800">
+          <div class="font-bold text-emerald-400 mb-1">Score (300 a 990)</div>
+          <p class="text-slate-300">Puntaje de riesgo del cliente. <strong>700+</strong> es riesgo bajo; <strong>&lt;600</strong> es riesgo alto.</p>
+        </div>
+        <div class="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800">
+          <div class="font-bold text-amber-400 mb-1">TNA vs. CFT</div>
+          <p class="text-slate-300">La <strong>TNA</strong> es el interés anual base. El <strong>CFT</strong> suma gastos y seguro: es el costo real del préstamo.</p>
+        </div>
+        <div class="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800">
+          <div class="font-bold text-indigo-400 mb-1">Cartera Activa</div>
+          <p class="text-slate-300">Todo el dinero prestado que los clientes todavía le deben a la financiera.</p>
+        </div>
+        <div class="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800">
+          <div class="font-bold text-rose-400 mb-1">Mora (+30 días)</div>
+          <p class="text-slate-300">Porcentaje de la cartera con cuotas atrasadas por más de un mes. Hay que mantenerla baja.</p>
+        </div>
+        <div class="sm:col-span-2 p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800">
+          <div class="font-bold text-sky-400 mb-1">Roles y Auditoría</div>
+          <p class="text-slate-300">En NexaCred cada empleado ve solo su área (Sucursal, Cobranzas) y cada aprobación queda grabada con su nombre.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       MODAL DE CONFIRMACIÓN DE REINICIO (SIN USAR confirm())
+  ===================================================================== -->
+  <div id="modal-confirm-home" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4" onclick="if(event.target===this) closeConfirmHome()">
+    <div class="w-full max-w-sm rounded-3xl bg-slate-900 border border-slate-700 p-6 text-center space-y-4 shadow-2xl animate-slide-up">
+      <div class="text-3xl">🏠</div>
+      <h3 class="text-lg font-extrabold text-white">¿Volver a la pantalla de inicio?</h3>
+      <p class="text-xs sm:text-sm text-slate-300">Se reiniciará el progreso de la partida actual.</p>
+      <div class="grid grid-cols-2 gap-3 pt-1">
+        <button onclick="closeConfirmHome()" class="py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-sm">Cancelar</button>
+        <button onclick="goHome()" class="py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm">Sí, salir</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-900 py-3 px-4 text-center text-[11px] sm:text-xs text-slate-500">
+    NexaCred S.R.L. • Simulador Interactivo de Riesgo Crediticio • Proyecto Académico UTN FRT
+  </footer>
+
+  <!-- =====================================================================
+       LÓGICA DEL JUEGO Y SINTETIZADOR DE SONIDO (WEB AUDIO API)
+  ===================================================================== -->
+  <script>
+    /**
+     * 1. MOTOR DE SONIDO SINTETIZADO (WEB AUDIO API)
+     * Genera efectos limpios sin depender de archivos externos ni URLs.
+     */
+    class SoundFX {
+      constructor() {
+        this.enabled = true;
+        this.ctx = null;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (AudioCtx) {
+            this.ctx = new AudioCtx();
+          }
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume().catch(() => {});
+        }
+      }
+
+      playTone(freq, type = 'sine', duration = 0.15, delay = 0, volume = 0.12) {
+        if (!this.enabled) return;
+        try {
+          this.init();
+          if (!this.ctx) return;
+
+          const now = this.ctx.currentTime + delay;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+
+          osc.type = type;
+          osc.frequency.setValueAtTime(freq, now);
+
+          gain.gain.setValueAtTime(0.001, now);
+          gain.gain.exponentialRampToValueAtTime(volume, now + 0.015);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(now);
+          osc.stop(now + duration + 0.02);
+        } catch (e) {
+          // Ignorar silenciosamente si el navegador bloquea audio
+        }
+      }
+
+      click() {
+        this.playTone(520, 'sine', 0.07, 0, 0.08);
+      }
+
+      bot() {
+        this.playTone(587.33, 'triangle', 0.10, 0, 0.09);     // D5
+        this.playTone(880.00, 'triangle', 0.14, 0.08, 0.09);  // A5
+      }
+
+      success() {
+        this.playTone(523.25, 'sine', 0.14, 0, 0.12);     // C5
+        this.playTone(659.25, 'sine', 0.14, 0.09, 0.12);  // E5
+        this.playTone(783.99, 'sine', 0.24, 0.18, 0.13);  // G5
+      }
+
+      error() {
+        this.playTone(260, 'sawtooth', 0.18, 0, 0.09);
+        this.playTone(195, 'sawtooth', 0.26, 0.13, 0.09);
+      }
+
+      fanfare() {
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((n, i) => {
+          this.playTone(n, 'triangle', 0.22, i * 0.1, 0.12);
+        });
+      }
+    }
+
+    const sfx = new SoundFX();
+
+    /**
+     * 2. BASE DE DATOS DE LOS 6 CASOS DEL TRIBUNAL NEXACRED
+     */
+    const CASES = [
+      {
+        id: 'NX-2026-01',
+        avatar: '👩‍🍳',
+        name: 'Valeria Mendoza',
+        age: '34 años',
+        role: 'Emprendedora Gastronómica',
+        purpose: 'Compra de horno convector industrial para su rotisería',
+        quote: '"Ya tengo pedidos confirmados para eventos y con este horno duplico la producción."',
+        amount: 1200000,
+        term: 12,
+        installment: 158000,
+        income: 720000,
+        tna: 62,
+        cft: 81,
+        score: 820,
+        docs: [
+          { label: 'DNI Frente y Dorso', ok: true, note: 'Vigente y legible' },
+          { label: 'Comprobante de Ingresos', ok: true, note: 'Monotributo Cat. E al día' },
+          { label: 'Comprobante de Domicilio', ok: true, note: 'Boleta de gas verificada' }
+        ],
+        nexabotHint: '¡Perfil sólido! Score de 820 (Riesgo Bajo), los 3 documentos obligatorios están verificados y la cuota de $158.000 representa apenas el 22% de sus ingresos declarados.',
+        shouldApprove: true,
+        outcomeRight: '¡Excelente decisión! Valeria asistió a la sucursal, completó la verificación biométrica y firma, y recibió el desembolso. Paga cada cuota en término.',
+        outcomeWrong: '¡Oportunidad perdida! Rechazaste a una emprendedora con Score 820, documentación completa y baja relación cuota/ingreso. Sacó el préstamo en la competencia.',
+        lessonTitle: 'De la Solicitud a la Cartera Activa',
+        lessonBody: 'Cuando aprobás una solicitud en el panel privado, el cliente pasa por sucursal para control biométrico y firma. Al desembolsarse, ese capital se suma a la Cartera Activa sana de la financiera.'
+      },
+      {
+        id: 'NX-2026-02',
+        avatar: '🕶️',
+        name: 'Kevin "CriptoKing" Morales',
+        age: '23 años',
+        role: 'Trader / Creador de Contenido',
+        purpose: 'Invertir en un token nuevo que "se multiplica por 10 este finde"',
+        quote: '"Bro, aprobame ya que en 48 horas te devuelvo el doble y te invito un asado."',
+        amount: 2500000,
+        term: 6,
+        installment: 615000,
+        income: 0,
+        incomeLabel: 'No declarado',
+        tna: 95,
+        cft: 128,
+        score: 390,
+        docs: [
+          { label: 'DNI Frente y Dorso', ok: true, note: 'Identidad validada' },
+          { label: 'Comprobante de Ingresos', ok: false, note: 'Subió captura de una app' },
+          { label: 'Comprobante de Domicilio', ok: false, note: 'Archivo no adjuntado' }
+        ],
+        nexabotHint: '¡Alerta roja! Score de 390 (Riesgo Alto), atrasos previos en el buró de crédito y faltan 2 de los 3 documentos obligatorios. Probabilidad crítica de impago.',
+        shouldApprove: false,
+        outcomeRight: '¡Bien frenado! Rechazaste un perfil de altísimo riesgo antes de desembolsar un peso. Protegiste la liquidez y evitaste que suba la mora.',
+        outcomeWrong: '¡Desastre financiero! El token cayó un 98% el lunes. Kevin dejó de pagar desde la primera cuota y el crédito entró en Mora (+30 días de atraso).',
+        lessonTitle: 'El Score Crediticio (< 600 = Riesgo Alto)',
+        lessonBody: 'NexaCred evalúa el historial en una escala de 300 a 990. Un puntaje menor a 600 advierte historial de incumplimientos: aprobarlo dispara el índice de Mora de la financiera.'
+      },
+      {
+        id: 'NX-2026-03',
+        avatar: '🧑‍💼',
+        name: 'Martín Pereyra',
+        age: '41 años',
+        role: 'Empleado Administrativo',
+        purpose: 'Refacción del baño y cambio de cañerías en su casa',
+        quote: '"Tengo un puntaje bárbaro en todos los bancos, así que ni me gasté en subir los papeles."',
+        amount: 900000,
+        term: 12,
+        installment: 121500,
+        income: 650000,
+        tna: 65,
+        cft: 85,
+        score: 745,
+        docs: [
+          { label: 'DNI Frente y Dorso', ok: true, note: 'Vigente' },
+          { label: 'Comprobante de Ingresos', ok: false, note: 'No adjuntado' },
+          { label: 'Comprobante de Domicilio', ok: false, note: 'No adjuntado' }
+        ],
+        nexabotHint: '¡Cuidado con la trampa! Tiene buen Score (745), pero NO subió comprobante de ingresos ni de domicilio. Sin los 3 requisitos obligatorios no se puede aprobar.',
+        shouldApprove: false,
+        outcomeRight: '¡Ojo de halcón! Aunque tenía Score 745, rechazaste la solicitud por falta de documentación obligatoria. El cliente puede volver a pedirlo cuando cargue sus papeles.',
+        outcomeWrong: '¡Observación de auditoría! Aprobaste un crédito sin respaldo documental. En sucursal no pudieron validar sus ingresos ni domicilio y tu usuario quedó registrado en el log.',
+        lessonTitle: 'Control Documental y Auditoría Interna',
+        lessonBody: 'Un buen Score no reemplaza los requisitos legales. En NexaCred cada aprobación queda registrada con el nombre del empleado que la autorizó para garantizar trazabilidad.'
+      },
+      {
+        id: 'NX-2026-04',
+        avatar: '👩‍🏫',
+        name: 'Prof. Laura Villalba',
+        age: '46 años',
+        role: 'Docente Universitaria',
+        purpose: 'Compra de notebook de trabajo y cámara para clases virtuales',
+        quote: '"Tuve un atraso chico hace dos años por una tarjeta clonada, pero ya regularicé todo y tengo recibo de sueldo."',
+        amount: 750000,
+        term: 12,
+        installment: 102000,
+        income: 580000,
+        tna: 68,
+        cft: 88,
+        score: 655,
+        docs: [
+          { label: 'DNI Frente y Dorso', ok: true, note: 'Vigente y legible' },
+          { label: 'Comprobante de Ingresos', ok: true, note: 'Recibo de sueldo titular' },
+          { label: 'Comprobante de Domicilio', ok: true, note: 'Factura de luz a su nombre' }
+        ],
+        nexabotHint: 'Está en Zona Gris (Score 655), donde decide el analista: tiene estabilidad laboral comprobada, 3/3 documentos impecables y la cuota es solo el 17,5% de su ingreso.',
+        shouldApprove: true,
+        outcomeRight: '¡Gran criterio analítico! Supiste leer más allá del número automático: Laura firmó en sucursal y cumple puntualmente todos los meses.',
+        outcomeWrong: '¡Demasiado estricto! Laura estaba en Zona Gris (655), pero tenía ingresos estables comprobados y cuota muy baja. Perdiste un crédito sano y rentable.',
+        lessonTitle: 'La Zona Gris (600 a 699 pts)',
+        lessonBody: 'Cuando un solicitante cae entre 600 y 699, el sistema no lo descarta: le da herramientas al analista para cruzar el score con su recibo de sueldo y relación cuota/ingreso.'
+      },
+      {
+        id: 'NX-2026-05',
+        avatar: '📦',
+        name: 'Roberto Gómez',
+        age: '38 años',
+        role: 'Comerciante Minorista',
+        purpose: 'Compra de mercadería importada para revender',
+        quote: '"Mirá qué linda la TNA que me mostró el simulador, ¡dame el monto máximo!"',
+        amount: 3200000,
+        term: 12,
+        installment: 498000,
+        income: 540000,
+        tna: 72,
+        cft: 104,
+        score: 615,
+        docs: [
+          { label: 'DNI Frente y Dorso', ok: true, note: 'Vigente' },
+          { label: 'Comprobante de Ingresos', ok: true, note: 'Declaración mensual $540.000' },
+          { label: 'Comprobante de Domicilio', ok: true, note: 'Habilitación comercial' }
+        ],
+        nexabotHint: '¡Atención al CFT! El cliente miró solo la TNA, pero con gastos y seguros (CFT 104%), la cuota de $498.000 le consume el 92% de su ingreso mensual. ¡Sobreendeudamiento!',
+        shouldApprove: false,
+        outcomeRight: '¡Excelente lectura financiera! Detectaste que la cuota real (con CFT) ahogaba su sueldo. Evitaste un caso seguro de mora.',
+        outcomeWrong: '¡Caíste en la trampa de la TNA! Con $498.000 de cuota sobre $540.000 de ingreso, Roberto no pudo pagar el segundo mes y cayó en Mora.',
+        lessonTitle: 'TNA vs. CFT (Costo Financiero Total)',
+        lessonBody: 'La TNA es solo la tasa nominal, pero el CFT incluye gastos y seguros. Si la cuota resultante supera el 35%–40% de los ingresos del cliente, el impago es casi seguro.'
+      },
+      {
+        id: 'NX-2026-06',
+        avatar: '💻',
+        name: 'Lucas Fernández',
+        age: '29 años',
+        role: 'Técnico en Sistemas y Redes',
+        purpose: 'Servidor local y herramientas de diagnóstico para su consultora',
+        quote: '"Ya saqué un préstamo acá el año pasado, lo pagué completo y ahora vengo por el segundo."',
+        amount: 1800000,
+        term: 18,
+        installment: 195000,
+        income: 950000,
+        tna: 59,
+        cft: 76,
+        score: 890,
+        docs: [
+          { label: 'DNI Frente y Dorso', ok: true, note: 'Vigente' },
+          { label: 'Comprobante de Ingresos', ok: true, note: 'Facturación verificada' },
+          { label: 'Comprobante de Domicilio', ok: true, note: 'Servicio de fibra óptica' }
+        ],
+        nexabotHint: 'Cliente estrella: Score 890, historial previo cumplido al 100% en nuestra propia cartera, documentación completa y cuota equivalente al 20,5% de sus ingresos.',
+        shouldApprove: true,
+        outcomeRight: '¡Cierre brillante! Lucas pasó por sucursal, firmó su segundo crédito y sumó $1.800.000 de altísima calidad a la Cartera Activa.',
+        outcomeWrong: '¡Error costoso! Rechazaste a un cliente fidelizado con Score 890 y papeles impecables. Dejaste ir $1.800.000 de cartera saludable.',
+        lessonTitle: 'Seguimiento de Pagos y Fidelización',
+        lessonBody: 'El módulo de cobranzas de NexaCred monitorea los vencimientos y envía recordatorios. Quien cumple mejora su score y vuelve a operar con bajo riesgo.'
+      }
+    ];
+
+    /**
+     * 3. ESTADO DE LA PARTIDA
+     */
+    const INITIAL_CARTERA = 1500000;
+    const INITIAL_MORA = 4.2;
+
+    let state = {
+      currentIndex: 0,
+      cartera: INITIAL_CARTERA,
+      mora: INITIAL_MORA,
+      points: 0,
+      history: [], // { caseData, userApproved, isCorrect }
+      isModalOpen: false,
+      isGameActive: false
+    };
+
+    /**
+     * 4. UTILIDADES DE FORMATO Y UI
+     */
+    function formatARS(num) {
+      return '$' + Math.round(num).toLocaleString('es-AR');
+    }
+
+    function toggleSound() {
+      sfx.enabled = !sfx.enabled;
+      const icon = document.getElementById('sound-icon');
+      const label = document.getElementById('sound-label');
+      const btn = document.getElementById('btn-sound');
+
+      if (sfx.enabled) {
+        icon.textContent = '🔊';
+        label.textContent = 'Sonido';
+        btn.className = 'px-2.5 py-2 sm:px-3 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition active:scale-95';
+        sfx.click();
+      } else {
+        icon.textContent = '🔇';
+        label.textContent = 'Silencio';
+        btn.className = 'px-2.5 py-2 sm:px-3 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700/80 text-slate-400 text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition active:scale-95';
+      }
+    }
+
+    function toggleProjectorMode() {
+      sfx.click();
+      const html = document.documentElement;
+      const isProj = html.classList.toggle('projector-mode');
+      const label = document.getElementById('projector-label');
+      const btn = document.getElementById('btn-projector');
+
+      if (isProj) {
+        label.textContent = 'Proyector: ON';
+        btn.classList.add('border-indigo-500/50', 'bg-indigo-500/15', 'text-indigo-200');
+      } else {
+        label.textContent = 'Proyector: OFF';
+        btn.classList.remove('border-indigo-500/50', 'bg-indigo-500/15', 'text-indigo-200');
+      }
+    }
+
+    function toggleGlossary(show) {
+      sfx.click();
+      const modal = document.getElementById('modal-glossary');
+      if (show) {
+        modal.classList.remove('hidden');
+      } else {
+        modal.classList.add('hidden');
+      }
+    }
+
+    function confirmReturnHome() {
+      if (!state.isGameActive) {
+        goHome();
+        return;
+      }
+      sfx.click();
+      document.getElementById('modal-confirm-home').classList.remove('hidden');
+    }
+
+    function closeConfirmHome() {
+      sfx.click();
+      document.getElementById('modal-confirm-home').classList.add('hidden');
+    }
+
+    function goHome() {
+      sfx.click();
+      state.isGameActive = false;
+      state.isModalOpen = false;
+      document.getElementById('modal-confirm-home').classList.add('hidden');
+      document.getElementById('modal-resolution').classList.add('hidden');
+      document.getElementById('screen-game').classList.add('hidden');
+      document.getElementById('screen-results').classList.add('hidden');
+      document.getElementById('screen-start').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    /**
+     * 5. FLUJO PRINCIPAL DEL JUEGO
+     */
+    function startGame() {
+      sfx.click();
+      state = {
+        currentIndex: 0,
+        cartera: INITIAL_CARTERA,
+        mora: INITIAL_MORA,
+        points: 0,
+        history: [],
+        isModalOpen: false,
+        isGameActive: true
+      };
+
+      document.getElementById('screen-start').classList.add('hidden');
+      document.getElementById('screen-results').classList.add('hidden');
+      document.getElementById('modal-resolution').classList.add('hidden');
+      document.getElementById('screen-game').classList.remove('hidden');
+
+      updateHUD();
+      renderCase();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function updateHUD() {
+      const idx = state.currentIndex;
+      const total = CASES.length;
+      const displayNum = Math.min(idx + 1, total);
+
+      document.getElementById('hud-case').textContent = `Caso ${displayNum}`;
+      document.getElementById('progress-pct').textContent = `${displayNum}/${total}`;
+      document.getElementById('hud-cartera').textContent = formatARS(state.cartera);
+      document.getElementById('hud-points').textContent = state.points;
+
+      // Índice de Mora y badge de estado
+      const moraStr = state.mora.toFixed(1) + '%';
+      const hudMora = document.getElementById('hud-mora');
+      const moraBadge = document.getElementById('mora-badge');
+      const cardMora = document.getElementById('card-mora');
+
+      hudMora.textContent = moraStr;
+      if (state.mora >= 10.0) {
+        hudMora.className = 'mt-1 text-xl sm:text-2xl font-black text-rose-400 tabular-nums animate-pulse';
+        moraBadge.textContent = '¡Alerta Alta!';
+        moraBadge.className = 'px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-500/20 text-rose-300';
+        cardMora.classList.add('border-rose-500/50');
+      } else if (state.mora >= 6.5) {
+        hudMora.className = 'mt-1 text-xl sm:text-2xl font-black text-amber-300 tabular-nums';
+        moraBadge.textContent = 'Precaución';
+        moraBadge.className = 'px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300';
+        cardMora.classList.remove('border-rose-500/50');
+      } else {
+        hudMora.className = 'mt-1 text-xl sm:text-2xl font-black text-white tabular-nums';
+        moraBadge.textContent = 'Saludable';
+        moraBadge.className = 'px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-500/15 text-emerald-300';
+        cardMora.classList.remove('border-rose-500/50');
+      }
+
+      // Segmentos de progreso
+      const segContainer = document.getElementById('progress-segments');
+      segContainer.innerHTML = '';
+      for (let i = 0; i < total; i++) {
+        const seg = document.createElement('div');
+        let color = 'bg-slate-800';
+        if (i < state.history.length) {
+          color = state.history[i].isCorrect ? 'bg-emerald-400' : 'bg-rose-400';
+        } else if (i === idx) {
+          color = 'bg-indigo-400';
+        }
+        seg.className = `flex-1 h-full rounded-full transition-colors ${color}`;
+        segContainer.appendChild(seg);
+      }
+    }
+
+    function renderCase() {
+      const c = CASES[state.currentIndex];
+      const card = document.getElementById('dossier-card');
+
+      // Resetear animación y posición de tarjeta
+      card.style.transform = 'translateX(0) rotate(0deg)';
+      card.style.opacity = '1';
+      card.classList.remove('animate-slide-up');
+      void card.offsetWidth; // trigger reflow
+      card.classList.add('animate-slide-up');
+
+      // Cabecera y Perfil
+      document.getElementById('req-id').textContent = `#${c.id}`;
+      document.getElementById('app-avatar').textContent = c.avatar;
+      document.getElementById('app-name').textContent = c.name;
+      document.getElementById('app-age').textContent = c.age;
+      document.getElementById('app-role').textContent = c.role;
+      document.getElementById('app-purpose').innerHTML = `<span class="text-slate-400">Motivo:</span> ${c.purpose}`;
+      document.getElementById('app-quote').textContent = c.quote;
+
+      // Condiciones financieras
+      document.getElementById('fin-amount').textContent = formatARS(c.amount);
+      document.getElementById('fin-term').textContent = `en ${c.term} cuotas`;
+      document.getElementById('fin-installment').textContent = formatARS(c.installment);
+
+      if (c.income > 0) {
+        document.getElementById('fin-income').textContent = formatARS(c.income);
+        document.getElementById('fin-income-sub').textContent = 'Declarado en ficha';
+      } else {
+        document.getElementById('fin-income').textContent = c.incomeLabel || 'Sin respaldo';
+        document.getElementById('fin-income-sub').textContent = 'Sin recibo válido';
+      }
+
+      document.getElementById('fin-tna').textContent = `${c.tna}%`;
+      document.getElementById('fin-cft').textContent = `${c.cft}%`;
+
+      // Medidor de Score (300 - 990)
+      const scoreVal = document.getElementById('score-value');
+      const scoreBadge = document.getElementById('score-zone-badge');
+      const scoreMarker = document.getElementById('score-marker');
+
+      scoreVal.textContent = c.score;
+      const pct = Math.max(2, Math.min(98, ((c.score - 300) / (990 - 300)) * 100));
+      scoreMarker.style.left = `${pct}%`;
+
+      if (c.score >= 700) {
+        scoreVal.className = 'text-3xl sm:text-4xl font-black text-emerald-400 tabular-nums';
+        scoreBadge.textContent = 'Riesgo Bajo';
+        scoreBadge.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30';
+      } else if (c.score >= 600) {
+        scoreVal.className = 'text-3xl sm:text-4xl font-black text-amber-400 tabular-nums';
+        scoreBadge.textContent = 'Zona Gris';
+        scoreBadge.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30';
+      } else {
+        scoreVal.className = 'text-3xl sm:text-4xl font-black text-rose-400 tabular-nums';
+        scoreBadge.textContent = 'Riesgo Alto';
+        scoreBadge.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-500/15 text-rose-300 border border-rose-500/30';
+      }
+
+      // Documentación
+      const docsList = document.getElementById('docs-list');
+      docsList.innerHTML = '';
+      let validCount = 0;
+
+      c.docs.forEach(doc => {
+        if (doc.ok) validCount++;
+        const row = document.createElement('div');
+        row.className = `flex items-center justify-between gap-2 px-3 py-2 rounded-xl border text-xs ${
+          doc.ok
+            ? 'bg-emerald-500/5 border-emerald-500/20 text-slate-200'
+            : 'bg-rose-500/10 border-rose-500/30 text-rose-200'
+        }`;
+        row.innerHTML = `
+          <div class="min-w-0">
+            <div class="font-semibold truncate">${doc.label}</div>
+            <div class="text-[11px] ${doc.ok ? 'text-slate-400' : 'text-rose-300'} truncate">${doc.note}</div>
+          </div>
+          <span class="text-base shrink-0">${doc.ok ? '✅' : '❌'}</span>
+        `;
+        docsList.appendChild(row);
+      });
+
+      const docsCounter = document.getElementById('docs-counter');
+      docsCounter.textContent = `${validCount} / 3 OK`;
+      docsCounter.className = validCount === 3
+        ? 'text-xs font-bold text-emerald-400 tabular-nums'
+        : 'text-xs font-bold text-rose-400 tabular-nums';
+
+      // Ocultar caja de NexaBot para el nuevo caso
+      const botBox = document.getElementById('nexabot-box');
+      botBox.classList.add('hidden');
+      document.getElementById('nexabot-btn-text').textContent = 'Consultar a NexaBot (Análisis Rápido)';
+      document.getElementById('nexabot-text').textContent = c.nexabotHint;
+    }
+
+    function toggleNexaBot() {
+      sfx.bot();
+      const box = document.getElementById('nexabot-box');
+      const btnText = document.getElementById('nexabot-btn-text');
+      const isHidden = box.classList.contains('hidden');
+
+      if (isHidden) {
+        box.classList.remove('hidden');
+        btnText.textContent = 'Ocultar consejo de NexaBot';
+      } else {
+        box.classList.add('hidden');
+        btnText.textContent = 'Consultar a NexaBot (Análisis Rápido)';
+      }
+    }
+
+    function handleDecision(userApproved) {
+      if (!state.isGameActive || state.isModalOpen) return;
+
+      const c = CASES[state.currentIndex];
+      const isCorrect = userApproved === c.shouldApprove;
+
+      // Efecto visual rápido en la tarjeta
+      const card = document.getElementById('dossier-card');
+      card.style.transform = userApproved ? 'translateX(24px) rotate(1deg)' : 'translateX(-24px) rotate(-1deg)';
+
+      // Calcular impacto financiero
+      const impacts = [];
+      if (userApproved && c.shouldApprove) {
+        // Aprobó un buen crédito -> Suma a Cartera Activa y diluye ligeramente la mora
+        state.cartera += c.amount;
+        state.mora = Math.max(1.8, +(state.mora - 0.4).toFixed(1));
+        impacts.push({ text: `Cartera Activa +${formatARS(c.amount)}`, type: 'good' });
+        impacts.push({ text: 'Mora -0.4% (Cartera sana)', type: 'good' });
+      } else if (userApproved && !c.shouldApprove) {
+        // Aprobó un mal crédito -> Cae en Mora fuerte
+        state.mora = +(state.mora + 6.8).toFixed(1);
+        impacts.push({ text: 'Crédito cayó en Mora (+30 días)', type: 'bad' });
+        impacts.push({ text: 'Índice de Mora +6.8%', type: 'bad' });
+      } else if (!userApproved && !c.shouldApprove) {
+        // Rechazó un mal crédito -> Protegió la cartera
+        impacts.push({ text: 'Quebranto evitado', type: 'good' });
+        impacts.push({ text: 'Cartera protegida', type: 'neutral' });
+      } else {
+        // Rechazó un buen crédito -> Costo de oportunidad
+        impacts.push({ text: `Rentabilidad perdida (${formatARS(c.amount)})`, type: 'bad' });
+      }
+
+      if (isCorrect) {
+        state.points += 100;
+        sfx.success();
+      } else {
+        sfx.error();
+      }
+
+      state.history.push({
+        caseData: c,
+        userApproved,
+        isCorrect
+      });
+
+      updateHUD();
+      showResolutionModal(c, isCorrect, impacts);
+    }
+
+    function showResolutionModal(c, isCorrect, impacts) {
+      state.isModalOpen = true;
+      const modal = document.getElementById('modal-resolution');
+      const banner = document.getElementById('res-banner');
+      const icon = document.getElementById('res-icon');
+      const verdict = document.getElementById('res-verdict');
+      const ptsEarned = document.getElementById('res-points-earned');
+      const caseTag = document.getElementById('res-case-tag');
+      const outcome = document.getElementById('res-outcome');
+      const impactsBox = document.getElementById('res-impacts');
+      const lessonTitle = document.getElementById('res-lesson-title');
+      const lessonBody = document.getElementById('res-lesson-body');
+      const nextLabel = document.getElementById('btn-next-label');
+
+      if (isCorrect) {
+        banner.className = 'px-6 py-4 bg-emerald-500/15 border-b border-emerald-500/30 flex items-center justify-between';
+        icon.textContent = '🎉';
+        verdict.textContent = '¡DECISIÓN ACERTADA!';
+        verdict.className = 'text-lg sm:text-xl font-black text-emerald-300';
+        ptsEarned.textContent = '+100 puntos de analista';
+        ptsEarned.className = 'text-xs font-bold text-emerald-200/90';
+        outcome.textContent = c.outcomeRight;
+      } else {
+        banner.className = 'px-6 py-4 bg-rose-500/15 border-b border-rose-500/30 flex items-center justify-between';
+        icon.textContent = '⚠️';
+        verdict.textContent = '¡DECISIÓN RIESGOSA!';
+        verdict.className = 'text-lg sm:text-xl font-black text-rose-300';
+        ptsEarned.textContent = '0 puntos en esta solicitud';
+        ptsEarned.className = 'text-xs font-bold text-rose-200/90';
+        outcome.textContent = c.outcomeWrong;
+      }
+
+      caseTag.textContent = `Caso ${state.currentIndex + 1}/${CASES.length}`;
+
+      // Renderizar pills de impacto
+      impactsBox.innerHTML = '';
+      impacts.forEach(imp => {
+        const pill = document.createElement('span');
+        let cls = 'bg-slate-800 text-slate-300 border-slate-700';
+        if (imp.type === 'good') cls = 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30';
+        if (imp.type === 'bad') cls = 'bg-rose-500/15 text-rose-300 border-rose-500/30';
+        pill.className = `px-3 py-1 rounded-full text-xs font-bold border ${cls}`;
+        pill.textContent = imp.text;
+        impactsBox.appendChild(pill);
+      });
+
+      lessonTitle.textContent = c.lessonTitle;
+      lessonBody.textContent = c.lessonBody;
+
+      nextLabel.textContent = state.currentIndex + 1 < CASES.length
+        ? 'Siguiente Solicitud →'
+        : 'Ver Resultados Finales 🏆';
+
+      modal.classList.remove('hidden');
+    }
+
+    function nextCase() {
+      sfx.click();
+      state.isModalOpen = false;
+      document.getElementById('modal-resolution').classList.add('hidden');
+
+      state.currentIndex++;
+      if (state.currentIndex < CASES.length) {
+        updateHUD();
+        renderCase();
+      } else {
+        showFinalResults();
+      }
+    }
+
+    function showFinalResults() {
+      state.isGameActive = false;
+      sfx.fanfare();
+
+      document.getElementById('screen-game').classList.add('hidden');
+      document.getElementById('screen-results').classList.remove('hidden');
+
+      const correctCount = state.history.filter(h => h.isCorrect).length;
+      const trophy = document.getElementById('final-trophy');
+      const rank = document.getElementById('final-rank');
+      const subtitle = document.getElementById('final-subtitle');
+
+      if (state.points >= 500) {
+        trophy.textContent = '🏆';
+        rank.textContent = 'Director/a de Riesgo Crediticio';
+        subtitle.textContent = '¡Impecable! Dominaste el Score, verificaste la documentación y cuidaste la rentabilidad sin disparar la mora.';
+      } else if (state.points >= 300) {
+        trophy.textContent = '🎖️';
+        rank.textContent = 'Analista Senior de Crédito';
+        subtitle.textContent = '¡Buen trabajo! Detectaste la mayoría de los riesgos, aunque algún caso en zona gris puso a prueba la cartera.';
+      } else {
+        trophy.textContent = '📋';
+        rank.textContent = 'Analista en Capacitación';
+        subtitle.textContent = '¡Buen intento! Recordá mirar siempre el tridente de NexaCred: Score + 3 Documentos + CFT vs. Ingresos.';
+      }
+
+      document.getElementById('final-points').textContent = `${state.points} / 600`;
+      document.getElementById('final-accuracy').textContent = `${correctCount} de ${CASES.length} casos acertados`;
+      document.getElementById('final-cartera').textContent = formatARS(state.cartera);
+
+      const finalMoraEl = document.getElementById('final-mora');
+      const finalMoraStatus = document.getElementById('final-mora-status');
+      finalMoraEl.textContent = state.mora.toFixed(1) + '%';
+
+      if (state.mora >= 10) {
+        finalMoraEl.className = 'text-2xl sm:text-3xl font-black text-rose-400 tabular-nums mt-1';
+        finalMoraStatus.textContent = 'Mora elevada (>10%)';
+        finalMoraStatus.className = 'text-xs text-rose-400 mt-1';
+      } else {
+        finalMoraEl.className = 'text-2xl sm:text-3xl font-black text-emerald-400 tabular-nums mt-1';
+        finalMoraStatus.textContent = 'Cartera saludable';
+        finalMoraStatus.className = 'text-xs text-emerald-400 mt-1';
+      }
+
+      // Renderizar resumen caso por caso
+      const recapList = document.getElementById('final-recap-list');
+      recapList.innerHTML = '';
+
+      state.history.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = `p-3 rounded-2xl border flex items-center justify-between gap-3 ${
+          item.isCorrect
+            ? 'bg-emerald-500/5 border-emerald-500/25'
+            : 'bg-rose-500/10 border-rose-500/30'
+        }`;
+
+        const decisionText = item.userApproved ? 'Aprobaste' : 'Rechazaste';
+        div.innerHTML = `
+          <div class="flex items-center gap-2.5 min-w-0">
+            <span class="text-xl shrink-0">${item.caseData.avatar}</span>
+            <div class="min-w-0">
+              <div class="text-xs sm:text-sm font-bold text-white truncate">${index + 1}. ${item.caseData.name}</div>
+              <div class="text-[11px] text-slate-400 truncate">
+                Score ${item.caseData.score} • ${decisionText}
+              </div>
+            </div>
+          </div>
+          <span class="text-sm font-extrabold shrink-0 ${item.isCorrect ? 'text-emerald-400' : 'text-rose-400'}">
+            ${item.isCorrect ? '✔ +100' : '✘ 0'}
+          </span>
+        `;
+        recapList.appendChild(div);
+      });
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    /**
+     * 6. ATAJOS DE TECLADO Y GESTOS TÁCTILES (SWIPE EN MÓVIL)
+     */
+    document.addEventListener('keydown', (e) => {
+      // Cerrar glosario con Escape
+      if (e.key === 'Escape') {
+        toggleGlossary(false);
+        closeConfirmHome();
+        return;
+      }
+
+      if (!state.isGameActive) return;
+
+      if (state.isModalOpen) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          nextCase();
+        }
+        return;
+      }
+
+      if (e.key === 'ArrowLeft' || e.key.toLowerCase() === 'a') {
+        e.preventDefault();
+        handleDecision(false);
+      } else if (e.key === 'ArrowRight' || e.key.toLowerCase() === 'd') {
+        e.preventDefault();
+        handleDecision(true);
+      } else if (e.key.toLowerCase() === 'b') {
+        e.preventDefault();
+        toggleNexaBot();
+      }
+    });
+
+    // Soporte de deslizamiento táctil (Swipe) sobre la tarjeta en celulares
+    (function setupTouchSwipe() {
+      const card = document.getElementById('dossier-card');
+      let startX = 0;
+      let startY = 0;
+      let isDragging = false;
+
+      card.addEventListener('touchstart', (e) => {
+        if (!state.isGameActive || state.isModalOpen) return;
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+        isDragging = true;
+      }, { passive: true });
+
+      card.addEventListener('touchmove', (e) => {
+        if (!isDragging || !state.isGameActive || state.isModalOpen) return;
+        const dx = e.touches[0].clientX - startX;
+        const dy = e.touches[0].clientY - startY;
+
+        // Solo animar si el movimiento horizontal predomina sobre el scroll vertical
+        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 15) {
+          const clamped = Math.max(-90, Math.min(90, dx * 0.45));
+          card.style.transform = `translateX(${clamped}px) rotate(${clamped * 0.04}deg)`;
+        }
+      }, { passive: true });
+
+      card.addEventListener('touchend', (e) => {
+        if (!isDragging || !state.isGameActive || state.isModalOpen) return;
+        isDragging = false;
+        const endX = e.changedTouches[0].clientX;
+        const endY = e.changedTouches[0].clientY;
+        const dx = endX - startX;
+        const dy = endY - startY;
+
+        card.style.transform = 'translateX(0) rotate(0deg)';
+
+        if (Math.abs(dx) > 85 && Math.abs(dx) > Math.abs(dy) * 1.4) {
+          if (dx > 0) {
+            handleDecision(true);
+          } else {
+            handleDecision(false);
+          }
+        }
+      }, { passive: true });
+    })();
+  </script>
+</body>
+</html>
